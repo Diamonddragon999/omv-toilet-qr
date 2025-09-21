@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OMV Toilet QR Generator</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <h1>🚽 OMV Toilet QR Generator</h1>
+        <p class="lead">
+          Generate QR codes that mimic the structure used on OMV gas station
+          receipts. For educational purposes only — support the stations you use!
+        </p>
+        <a class="button" href="#generator">Jump to generator</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="generator" class="card">
+        <h2>Generate a QR code</h2>
+        <p>
+          Pick a known location or enter the BON and operator codes manually.
+          The generator will use your local time and date and format the amount
+          with two decimals.
+        </p>
+
+        <form id="qr-form" class="form" autocomplete="off">
+          <div class="field">
+            <label for="location">Location</label>
+            <select id="location" name="location">
+              <option value="" disabled selected>Choose a location</option>
+            </select>
+            <p id="location-note" class="field__note"></p>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="bon">BON ID</label>
+              <input
+                id="bon"
+                name="bon"
+                inputmode="numeric"
+                minlength="6"
+                maxlength="12"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="operator">Operator code</label>
+              <input
+                id="operator"
+                name="operator"
+                inputmode="numeric"
+                minlength="6"
+                maxlength="12"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="amount">Amount (BGN)</label>
+              <input
+                id="amount"
+                name="amount"
+                type="number"
+                min="0.50"
+                max="999.99"
+                step="0.01"
+                value="2.00"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="offset">Time offset (minutes)</label>
+              <input
+                id="offset"
+                name="offset"
+                type="number"
+                min="-15"
+                max="15"
+                value="0"
+              />
+              <span class="field__hint"
+                >Use a negative number to go back in time.</span
+              >
+            </div>
+          </div>
+
+          <button type="submit" class="button">Generate</button>
+        </form>
+
+        <div id="result" class="result" hidden>
+          <h3>QR payload</h3>
+          <code id="payload" class="payload"></code>
+          <button id="copy" type="button" class="button button--ghost">
+            Copy payload
+          </button>
+
+          <h3>QR preview</h3>
+          <canvas id="qr-canvas" width="240" height="240"></canvas>
+          <p class="result__timestamp">
+            Generated at <span id="generated-at"></span>
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>How the format works</h2>
+        <p>
+          Each QR code contains a single string with the following parts
+          concatenated:
+        </p>
+        <pre><code>[BON_ID][OPERATOR_CODE][DATE][TIME][AMOUNT]</code></pre>
+        <p>
+          An example captured from a receipt looks like this:
+        </p>
+        <pre><code>4500601608314992025-08-0713:06:36197.18</code></pre>
+        <ul>
+          <li>
+            <strong>Timestamp</strong> — many doors only accept codes generated in
+            the last few minutes.
+          </li>
+          <li>
+            <strong>Format</strong> — the hyphenated date (<code>YYYY-MM-DD</code>)
+            and time (<code>HH:MM:SS</code>) are required.
+          </li>
+          <li>
+            <strong>Amount</strong> — usually needs to be above 1–2 BGN.
+          </li>
+        </ul>
+      </section>
+
+      <section class="card" id="locations">
+        <h2>Known locations</h2>
+        <p>
+          These entries were contributed by people who tested the format on real
+          OMV stations. Tap a card to open the location in Google Maps.
+        </p>
+        <div id="location-list" class="location-list"></div>
+        <p class="muted">
+          Know another working station? Edit
+          <code>locations.json</code> on GitHub and send a pull request.
+        </p>
+      </section>
+
+      <section class="card card--warning">
+        <h2>⚠️ Disclaimer</h2>
+        <p>
+          This project is intended for educational purposes. Be respectful and
+          support the businesses you visit. If you are using the facilities,
+          consider buying something small. 💧
+        </p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>
+        MIT Licensed. Built with vanilla HTML, CSS, and JavaScript — ready for
+        GitHub Pages.
+      </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="script.js" type="module"></script>
+  </body>
+</html>
